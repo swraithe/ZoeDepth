@@ -38,5 +38,8 @@ with gr.Blocks(css=css) as demo:
     with gr.Tab("360 Panorama to 3D"):
         create_pano_to_3d_demo(model)
 
+    gr.HTML('''<br><br><br><center>You can duplicate this Space to skip the queue:<a href="https://huggingface.co/spaces/shariqfarooq/ZoeDepth?duplicate=true"><img src="https://bit.ly/3gLdBN6" alt="Duplicate Space"></a><br>
+        <p><img src="https://visitor-badge.glitch.me/badge?page_id=shariqfarooq.zoedepth_demo_hf" alt="visitors"></p></center>''')
+
 if __name__ == '__main__':
     demo.queue().launch()

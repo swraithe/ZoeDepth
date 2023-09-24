@@ -1,45 +1,73 @@
+from __future__ import annotations
+from typing import Iterable
 import gradio as gr
-import torch
-
-from gradio_depth_pred import create_demo as create_depth_pred_demo
+from gradio.themes.base import Base
+from gradio.themes.utils import colors, fonts, sizes
 from gradio_im_to_3d import create_demo as create_im_to_3d_demo
-from gradio_pano_to_3d import create_demo as create_pano_to_3d_demo
+import torch
+import time
 
-
-css = """
-#img-display-container {
-    max-height: 50vh;
-    }
-#img-display-input {
-    max-height: 40vh;
-    }
-#img-display-output {
-    max-height: 40vh;
-    }
-    
-"""
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 model = torch.hub.load('isl-org/ZoeDepth', "ZoeD_N", pretrained=True).to(DEVICE).eval()
 
-title = "# ZoeDepth"
-description = """Official demo for **ZoeDepth: Zero-shot Transfer by Combining Relative and Metric Depth**.
+class Seafoam(Base):
+    def __init__(
+        self,
+        *,
+        primary_hue: colors.Color | str = colors.emerald,
+        secondary_hue: colors.Color | str = colors.red,
+        neutral_hue: colors.Color | str = colors.blue,
+        spacing_size: sizes.Size | str = sizes.spacing_md,
+        radius_size: sizes.Size | str = sizes.radius_md,
+        text_size: sizes.Size | str = sizes.text_lg,
+        text_color: colors.Color | str = colors.red,
+        font: fonts.Font
+        | str
+        | Iterable[fonts.Font | str] = (
+            fonts.GoogleFont("Quicksand"),
+            "ui-sans-serif",
+            "sans-serif",
+        ),
+        font_mono: fonts.Font
+        | str
+        | Iterable[fonts.Font | str] = (
+            fonts.GoogleFont("IBM Plex Mono"),
+            "ui-monospace",
+            "monospace",
+        ),
+    ):
+        super().__init__(
+            primary_hue=primary_hue,
+            secondary_hue=secondary_hue,
+            neutral_hue=neutral_hue,
+            spacing_size=spacing_size,
+            radius_size=radius_size,
+            text_size=text_size,
+            font=font,
+            font_mono=font_mono,
+        )
+        super().set(
+            body_background_fill="rgb(0,0,0)",
+            body_background_fill_dark="",
+            button_primary_background_fill="",
+            button_primary_background_fill_hover="",
+            button_primary_text_color="white",
+            button_primary_background_fill_dark="",
+            slider_color="*secondary_300",
+            slider_color_dark="*secondary_600",
+            block_title_text_weight="600",
+            block_border_width="3px",
+            block_shadow="*shadow_drop_lg",
+            button_shadow="*shadow_drop_lg",
+            button_large_padding="10px",
+        )
 
-ZoeDepth is a deep learning model for metric depth estimation from a single image.
+seafoam = Seafoam()
 
-Please refer to our [paper](https://arxiv.org/abs/2302.12288) or [github](https://github.com/isl-org/ZoeDepth) for more details."""
+title = "Image to 3D mesh"
 
-with gr.Blocks(css=css) as demo:
+with gr.Blocks(theme=seafoam) as demo:
     gr.Markdown(title)
-    gr.Markdown(description)
-    with gr.Tab("Depth Prediction"):
-        create_depth_pred_demo(model)
-    with gr.Tab("Image to 3D"):
-        create_im_to_3d_demo(model)
-    with gr.Tab("360 Panorama to 3D"):
-        create_pano_to_3d_demo(model)
-
-    gr.HTML('''<br><br><br><center>You can duplicate this Space to skip the queue:<a href="https://huggingface.co/spaces/shariqfarooq/ZoeDepth?duplicate=true"><img src="https://bit.ly/3gLdBN6" alt="Duplicate Space"></a><br>
-        <p><img src="https://visitor-badge.glitch.me/badge?page_id=shariqfarooq.zoedepth_demo_hf" alt="visitors"></p></center>''')
-
-if __name__ == '__main__':
-    demo.queue().launch()
+    create_im_to_3d_demo(model)
+print("Server is running")
+demo.launch(server_name="0.0.0.0")

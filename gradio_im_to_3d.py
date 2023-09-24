@@ -52,8 +52,7 @@ def get_mesh(model, image, keep_edges=False):
     return glb_path
 
 def create_demo(model):
-
-    gr.Markdown("### Image to 3D mesh")
+    # gr.Markdown("### Image to 3D mesh")
     gr.Markdown("Convert a single 2D image to a 3D mesh")
 
     with gr.Row():
